@@ -39,9 +39,9 @@ $ systemctl status libvirtd
 ● libvirtd.service - Virtualization daemon
      Active: active (running) since ...
 ```
-[Скриншот 1: systemctl status libvirtd]
+![\[Скриншот 1: systemctl status libvirtd\]](screenshots/0.png)
 
-**Версия virsh и список ВМ:**
+**Cписок ВМ:**
 ```bash
 $ virsh version
 Compiled against library: libvirt 8.2.2
@@ -55,7 +55,8 @@ $ virsh list --all
  1    guest-ubuntu   running
  2    ubuntu-vm      running
 ```
-[Скриншот 2: virsh version и virsh list --all]
+![\[Скриншот 2: virsh version и virsh list --all\]](screenshots/3.png)
+![alt text](screenshots/4.png)
 
 ---
 
@@ -82,7 +83,7 @@ sudo virt-install \
 ```bash
 vncviewer localhost:5901
 ```
-[Скриншот 3: окно VNC с началом установки Ubuntu Server]
+![alt text](screenshots/3.png)
 
 По завершении установки ВМ отображается в списке:
 ```bash
@@ -91,7 +92,8 @@ $ virsh list --all
 ----------------------------
  4    ubuntu-vm1   running
 ```
-
+![alt text](screenshots/2.png)
+![alt text](screenshots/5.png)
 ---
 
 ## 4. Задания 3–4. Пользователь user и SSH по ключу
@@ -100,15 +102,7 @@ $ virsh list --all
 Аутентификация по SSH-ключам безопаснее парольной: используется пара «открытый ключ (на сервере) – закрытый ключ (у клиента)». Отключение `PasswordAuthentication` запрещает вход по паролю, оставляя только ключевую проверку.
 
 **Создание пользователя:**
-```bash
-$ sudo adduser user
-Adding user `user' ...
-Adding new group `user' (1001) ...
-Adding new user `user' (1001) with group `user' ...
-...
-$ id user
-uid=1001(user) gid=1001(user) groups=1001(user)
-```
+![alt text](screenshots/2.png)
 
 **Настройка SSH по ключу и отключение парольной аутентификации.**
 
@@ -117,23 +111,17 @@ uid=1001(user) gid=1001(user) groups=1001(user)
 ssh-keygen -t ed25519
 ssh-copy-id user@192.168.122.137
 ```
+![alt text](screenshots/8.png)
+![alt text](screenshots/9.png)
 
 В гостевой ВМ в файле `/etc/ssh/sshd_config` установлены:
 ```
 PubkeyAuthentication yes
 PasswordAuthentication no
 ```
-[Скриншот 4: фрагмент sshd_config с PasswordAuthentication no]
+![\[Скриншот 4: фрагмент sshd_config с PasswordAuthentication no\]](screenshots/10.png)
 
 После перезапуска `sshd` вход по ключу работает, попытка входа без ключа отклоняется.
-
-**Проверка входа:**
-```bash
-$ ssh user@192.168.122.137
-Welcome to Ubuntu 24.04.1 LTS ...
-user@user:~$
-```
-[Скриншот 5: окно терминала с успешным входом по SSH без запроса пароля]
 
 ---
 
@@ -183,10 +171,8 @@ Filesystem                         Size  Used Avail Use% Mounted on
 default via 192.168.122.1 dev ens3 proto dhcp src 192.168.122.137 metric 100
 192.168.122.0/24 dev ens3 proto kernel scope link src 192.168.122.137 metric 100
 ```
-[Скриншот 6: коллаж из терминала с выводами lscpu, free -h, lsblk и ip a]
+![\[Скриншот 6: коллаж из терминала с выводами lscpu, free -h, lsblk и ip a\]](screenshots/11.png)
 
-**Описание ресурсов ВМ:**  
-Гостевая система оснащена 2 виртуальными процессорами, 2 ГБ оперативной памяти, системным диском на 10 ГБ (используется LVM), дополнительным диском vdb на 20 ГБ (пока не смонтирован). Сеть построена через NAT, интерфейс ens3 получил IP‑адрес из подсети 192.168.122.0/24, шлюз по умолчанию — 192.168.122.1.
 
 ---
 
@@ -203,6 +189,7 @@ sudo qemu-img create -f raw /var/lib/libvirt/images/test-disk.img 20G
 # Подключение к ВМ
 virsh attach-disk ubuntu-vm1 /var/lib/libvirt/images/test-disk.img vdb --targetbus virtio --cache none --config
 ```
+![alt text](screenshots/15.png)
 
 **После перезапуска гостя:**
 ```bash
@@ -211,7 +198,7 @@ NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 vda    253:0    0   10G  0 disk ...
 vdb    253:16   0   20G  0 disk            ← диск обнаружен
 ```
-[Скриншот 7: lsblk с vdb размером 20 ГБ]
+![\[Скриншот 7: lsblk с vdb размером 20 ГБ\]](screenshots/16.png)
 
 ---
 
@@ -230,19 +217,15 @@ sudo mount /dev/vdb1 /disk
 echo '/dev/vdb1 /disk ext4 defaults 0 2' | sudo tee -a /etc/fstab
 ```
 
+![alt text](screenshots/21.png)
+
 **Проверка монтирования:**
 ```bash
 $ findmnt /disk
 TARGET SOURCE    FSTYPE OPTIONS
 /disk  /dev/vdb1 ext4   rw,relatime
 ```
-[Скриншот 8: findmnt /disk]
-
-**Фрагмент /etc/fstab:**
-```
-/dev/vdb1  /disk  ext4  defaults  0  2
-```
-[Скриншот 9: последняя строка fstab]
+![alt text](image.png)
 
 ---
 
@@ -261,12 +244,10 @@ sudo chmod 755 /disk
 user@user:~$ touch /disk/test_file
 user@user:~$ ls -l /disk
 total 16
-drwxr-xr-x 2 user user 4096 Apr 25 05:59 .
-drwxr-xr-x 3 root root 4096 Apr 25 05:58 ..
 drwxr-xr-x 2 user user 4096 Apr 25 06:00 nginx-site
 -rw-rw-r-- 1 user user    0 Apr 25 06:01 test_file
 ```
-[Скриншот 10: ls -l /disk с файлом test_file, принадлежащим user]
+![\[Скриншот 10: ls -l /disk с файлом test_file, принадлежащим user\]](screenshots/17.png)
 
 ---
 
@@ -302,7 +283,7 @@ Hello from Docker!
 This message shows that your installation appears to be working correctly.
 ...
 ```
-[Скриншот 11: вывод docker --version, systemctl status docker и docker run hello-world от имени user]
+![\[Скриншот 11: вывод docker --version, systemctl status docker и docker run hello-world от имени user\]](screenshots/18.png)
 
 ---
 
@@ -321,13 +302,14 @@ echo '<html><body><h1>Фамилия: Фролкин</h1></body></html>' > /disk
 ```bash
 docker run -d --name mynginx -p 80:80 -v /disk/nginx-site:/usr/share/nginx/html:ro nginx
 ```
+![alt text](screenshots/19.png)
 
 **Проверка с хоста KVM:**
 ```bash
 $ curl http://192.168.122.137
 <html><body><h1>Фамилия: Фролкин</h1></body></html>
 ```
-[Скриншот 12: веб-браузер с открытой страницей или терминал с выводом curl]
+![alt text](image-1.png)
 
 ---
 
